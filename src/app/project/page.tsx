@@ -1,7 +1,9 @@
 const page = () => {
   return (
-    <div>
-      <h1 className="text-4xl font-bold text-green-700">Project</h1>
+    <div className="w-4/3">
+      <h1 className=" heading md:text-6xl text-4xl text-center my-5 font-extrabold uppercase bg-gradient-to-t from-gray-300 bg-green-700">
+        Our ongoing projects are coming soon....
+      </h1>
     </div>
   );
 };

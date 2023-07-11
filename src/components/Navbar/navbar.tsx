@@ -16,7 +16,7 @@ const navbar = () => {
         <div className="flex items-center">
           <Image src={logo} alt="logo" width={70} height={70} />
           <p className="text-4xl font-semibold md:block hidden">
-            Do<span className="text-green-700">Nation</span>
+            Sa<span className="text-green-700">Dakah</span>
           </p>
         </div>
       </Link>
@@ -47,7 +47,7 @@ const navbar = () => {
           Projects
         </Link>
         <button className="px-4 py-1 rounded-md bg-green-700 text-gray-100 hover:bg-green-800 duration-300">
-          Donate
+          <Link href="/auth">Sign In</Link>
         </button>
       </div>
       {/* navbar tab div for mobile */}
@@ -62,10 +62,11 @@ const navbar = () => {
           className="text-4xl mr-1 font-bold mt-[5px] lg:hidden block"
         />
       )}
+     
       <div
         className={`bg-green-700 w-full absolute p-4 m-0 top-20 flex lg:hidden flex-col gap-4 ${
-          menuToggle ? "translate-y-[0%]" : "translate-y-[-120%]"
-        } duration-500 -z-30`}
+          menuToggle ? "translate-y-[0%]" : "translate-y-[-140%]"
+        } duration-500`}
       >
         <Link
           href="/causes"
@@ -80,7 +81,7 @@ const navbar = () => {
           Our story
         </Link>
         <Link
-          href="blog"
+          href="/blog"
           className="border-b p-1 text-center hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300"
         >
           Blogs
@@ -92,7 +93,7 @@ const navbar = () => {
           Projects
         </Link>
         <button className="border-b p-1 text-center bg-white text-gray-400 hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300">
-          Donate
+        <Link href="/auth">Sign In</Link>
         </button>
       </div>
     </div>
