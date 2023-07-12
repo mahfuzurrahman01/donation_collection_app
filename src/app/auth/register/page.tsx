@@ -118,6 +118,7 @@ const page = () => {
           });
           console.log(response);
           localStorage.setItem("token", response.data.token);
+          localStorage.setItem("isLoggedIn", "true");
         } catch (error) {
           console.log(error);
         }

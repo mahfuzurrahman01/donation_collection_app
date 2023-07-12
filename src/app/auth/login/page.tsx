@@ -2,12 +2,14 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { AuthContext, IUser } from "@/context/store";
 const page = () => {
   const router = useRouter();
+  const { userInfo, setUserInfo } = useContext(AuthContext);
   // this state are storing the users data for validation check
   const [userEmail, setUserEmail] = useState<string>("");
   const [userPassword, setUserPassword] = useState<string>("");
@@ -69,9 +71,17 @@ const page = () => {
           });
           console.log(response);
           localStorage.setItem("token", response.data.token);
+          localStorage.setItem("isLoggedIn", "true");
         } catch (error) {
           console.log(error);
         }
+        // set the current user data in store  (context api)
+        const currentUser: IUser = {
+          email: body.email,
+          isLoggedIn: true,
+        };
+        setUserInfo(currentUser);
+        // ================= *******set done ******* =============
         setEmailError("");
         setPasswordError("");
         event.target.reset();
