@@ -1,22 +1,131 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/no-unescaped-entities */
 "use client";
+import Link from "next/link";
+import { FormEvent, useState } from "react";
+import Swal from "sweetalert2";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 const page = () => {
+  const router = useRouter();
+  // this state are storing the users data for validation check
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userPassword, setUserPassword] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  // this is for sweet alert
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("mouseenter", Swal.stopTimer);
+      toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+  });
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement> | any) => {
+    event.preventDefault();
+    // setUserName(event.target.name.value);
+    // setUserEmail(event.target.email.value);
+    // setUserPassword(event.target.password.value);
+    const validEmail = userEmail.split("@");
+    if (userEmail === "" || undefined || null) {
+      setEmailError("Email is required");
+      return;
+    }
+    if (validEmail.length !== 2) {
+      setEmailError("A valid email is required");
+      return;
+    }
+    if (userPassword === "" || undefined || null) {
+      setPasswordError("password is required");
+      return;
+    }
+    // this is the request body
+    const body = {
+      email: userEmail,
+      password: userPassword,
+    };
+
+    console.log(body);
+
+    try {
+      const response: any = await axios.post(
+        "http://localhost:5000/login",
+        body
+      );
+      console.log(response);
+      if (response.data.ok) {
+        Toast.fire({
+          icon: "success",
+          title: "Sign in successfully",
+        });
+        try {
+          const response: any = await axios.post("http://localhost:5000/jwt", {
+            email: body.email,
+          });
+          console.log(response);
+          localStorage.setItem("token", response.data.token);
+        } catch (error) {
+          console.log(error);
+        }
+        setEmailError("");
+        setPasswordError("");
+        event.target.reset();
+        router.push("/");
+      } else {
+        Toast.fire({
+          icon: "error",
+          title: `${response.data.message}`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // this function will work for all field and first it will check the name of the field and set the value according to that
+  const universalOnChangeFunc = (event: HTMLInputElement | any) => {
+    event.preventDefault();
+    const field = event.target.name;
+    const value = event.target.value;
+    if (field === "email") {
+      setEmailError("");
+      setUserEmail(value);
+    } else if (field === "password") {
+      setPasswordError("");
+      setUserPassword(value);
+    }
+  };
+
   return (
-    <div className="lg:my-16 my-5 mx-auto">
-      <div className="w-full p-8 space-y-3 rounded-xl bg-gray-900 bg-opacity-30 text-gray-300">
-        <h1 className="text-2xl font-bold text-center text-green-700">Sign In</h1>
-        <form className="space-y-6 ng-untouched ng-pristine ng-valid">
+    <div className="lg:my-10 my-5 mx-auto">
+      <div className="lg:w-[400px] lg:max-w-[400px] w-[350px] max-w-[350px] p-8 space-y-3 rounded-xl bg-gray-900 bg-opacity-30 text-gray-300">
+        <h1 className="text-2xl font-bold text-center text-green-700">
+          Sign In
+        </h1>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 ng-untouched ng-pristine ng-valid"
+        >
           <div className="space-y-1 text-sm">
-            <label htmlFor="username" className="block text-gray-400">
+            <label htmlFor="email" className="block text-gray-400">
               Your email
             </label>
             <input
               type="email"
-              name="username"
-              id="username"
+              name="email"
+              id="email"
               placeholder="Enter email"
               className="w-full px-4 py-3 rounded-md border-gray-700 bg-gray-900 text-gray-100 focus:border-violet-400"
+              onChange={universalOnChangeFunc}
             />
+            {emailError !== "" && (
+              <small className="mt-1 text-red-700">{emailError}</small>
+            )}
           </div>
           <div className="space-y-1 text-sm">
             <label htmlFor="password" className="block text-gray-400">
@@ -28,10 +137,16 @@ const page = () => {
               id="password"
               placeholder="Enter password"
               className="w-full px-4 py-3 rounded-md border-gray-700 bg-gray-900 text-gray-100 focus:border-violet-400"
+              onChange={universalOnChangeFunc}
             />
-            
+            {passwordError !== "" && (
+              <small className="mt-1 text-red-700">{passwordError}</small>
+            )}
           </div>
-          <button className="block w-full p-3 text-center rounded-sm text-gray-300  bg-green-700">
+          <button
+            type="submit"
+            className="block w-full p-3 text-center rounded-sm text-gray-300  bg-green-700"
+          >
             Sign in
           </button>
         </form>
@@ -74,13 +189,9 @@ const page = () => {
         {/* eslint-disable-next-line react/no-unescaped-entities */}
         <p className="text-xs text-center sm:px-6 text-gray-400">
           Don't have an account?
-          <a
-            rel="noopener noreferrer"
-            href="#"
-            className="underline text-gray-100"
-          >
+          <Link href="/auth/register" className="underline text-gray-100">
             Sign up
-          </a>
+          </Link>
         </p>
       </div>
     </div>

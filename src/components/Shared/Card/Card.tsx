@@ -1,10 +1,13 @@
+"use client";
 /* eslint-disable react/no-unescaped-entities */
 import Image from "next/image";
 import Title from "../Title/Title";
 import education from "../../../../public/education.jpg";
 import hungry from "../../../../public/hungry.jpg";
 import house from "../../../../public/house.jpg";
+import { useRouter } from "next/navigation";
 const Card = () => {
+  const router = useRouter();
   return (
     <div className="mt-16">
       <div className="flex justify-center items-center gap-4 flex-col mb-5">
@@ -34,8 +37,11 @@ const Card = () => {
                 people like you grows essential for us to provide all we can to
                 impoverished students globally.
               </p>
-              <button type="button" className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm ">
-                Donate now
+              <button
+                type="button"
+                className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm "
+              >
+                Donate
               </button>
             </div>
           </div>
@@ -49,7 +55,9 @@ const Card = () => {
               <span className="text-xs uppercase text-gray-400">
                 Join, it's free
               </span>
-              <h3 className="text-3xl font-bold uppercase">Food and nutrition</h3>
+              <h3 className="text-3xl font-bold uppercase">
+                Food and nutrition
+              </h3>
               <p className="my-6 text-gray-400">
                 In the hospital in Ntamugenga, there is a pediatric ward,
                 dealing, among others, with children with acute hunger disease,
@@ -57,8 +65,11 @@ const Card = () => {
                 diagnosed hunger disease. Apart from malaria, hunger is the
                 biggest threat to life and health of the youngest.
               </p>
-              <button type="button" className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm ">
-                Donate now
+              <button
+                type="button"
+                className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm "
+              >
+                Donate
               </button>
             </div>
           </div>
@@ -79,11 +90,22 @@ const Card = () => {
                 strong door to lock. This special place we call home gives us
                 dignity and hope.
               </p>
-              <button type="button" className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm ">
-                Donate now
+              <button
+                type="button"
+                className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm "
+              >
+                Donate
               </button>
             </div>
           </div>
+        </div>
+        <div className="flex justify-center items-center mt-10">
+          <button
+            onClick={() => router.push("/causes")}
+            className="px-10 hover:bg-green-800 duration-300 py-1 bg-green-700 rounded-md text-gray-300"
+          >
+            View all
+          </button>
         </div>
       </section>
     </div>

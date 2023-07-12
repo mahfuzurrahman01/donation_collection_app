@@ -27,13 +27,13 @@ export default function Home() {
             home.
           </p>
           <button className="bg-gray-300 rounded-md text-green-700 px-7 hover:bg-green-700 hover:text-gray-300 duration-300 hover:font-semibold py-2 uppercase mt-5">
-            Donate
+            Donate now
           </button>
           <div className="flex justify-center items-center gap-4 mt-5">
-            <FaFacebook className="text-4xl border rounded-full p-2 text-green-700 hover:shadow-green-700 duration-300 hover:shadow-xl" />
-            <FaInstagram className="text-4xl border rounded-full p-2 text-green-700 hover:shadow-green-700 duration-300 hover:shadow-xl" />
-            <FaLinkedinIn className="text-4xl border rounded-full p-2 text-green-700 hover:shadow-green-700 duration-300 hover:shadow-xl" />
-            <FaTwitter className="text-4xl border rounded-full p-2 text-green-700 hover:shadow-green-700 duration-300 hover:shadow-xl" />
+            <FaFacebook className="text-4xl border-0 bg-gray-900 bg-opacity-50 rounded-full p-2 text-green-700 hover:shadow-green-700 duration-300 hover:shadow-xl" />
+            <FaInstagram className="text-4xl border-0 bg-gray-900 bg-opacity-50 rounded-full p-2 text-green-700 hover:shadow-green-700 duration-300 hover:shadow-xl" />
+            <FaLinkedinIn className="text-4xl border-0 bg-gray-900 bg-opacity-50 rounded-full p-2 text-green-700 hover:shadow-green-700 duration-300 hover:shadow-xl" />
+            <FaTwitter className="text-4xl border-0 bg-gray-900 bg-opacity-50 rounded-full p-2 text-green-700 hover:shadow-green-700 duration-300 hover:shadow-xl" />
           </div>
         </div>
       </div>

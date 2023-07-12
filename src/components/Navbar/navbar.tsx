@@ -21,7 +21,7 @@ const navbar = () => {
         </div>
       </Link>
       {/* navbar tab div for desktop */}
-      <div className="md:flex hidden items-center gap-5">
+      <div className="lg:flex hidden items-center gap-5">
         <Link
           className="hover:text-green-700 duration-300 hover:font-semibold"
           href="/causes"
@@ -47,7 +47,7 @@ const navbar = () => {
           Projects
         </Link>
         <button className="px-4 py-1 rounded-md bg-green-700 text-gray-100 hover:bg-green-800 duration-300">
-          <Link href="/auth">Sign In</Link>
+          <Link href="/auth/login">Sign In</Link>
         </button>
       </div>
       {/* navbar tab div for mobile */}
@@ -92,9 +92,9 @@ const navbar = () => {
         >
           Projects
         </Link>
-        <button className="border-b p-1 text-center bg-white text-gray-400 hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300">
-        <Link href="/auth">Sign In</Link>
-        </button>
+        <Link href="/auth/login" className="border-b p-1 text-center bg-white text-gray-400 hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300">
+        <p>Sign In</p>
+        </Link>
       </div>
     </div>
   );
