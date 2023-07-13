@@ -28,8 +28,13 @@ const page = () => {
 
     fetchData();
   }, [token]);
+  const logOutHandle = () => {
+    localStorage.clear()
+    localStorage.setItem('isLoggedIn','false')
+  }
   return (
     <div>
+      <button onClick={logOutHandle} className="bg-green-700 px-4 py-1 rounded-md">Logout</button>
       <h1>This is dashboard for {role}</h1>
     </div>
   );

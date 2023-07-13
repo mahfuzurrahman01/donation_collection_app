@@ -6,10 +6,12 @@ import { FormEvent, useContext, useState } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { AuthContext, IUser } from "@/context/store";
+import { AuthContext } from "@/AuthProvider/AuthProvider";
+import { getToken } from "@/utils/getToken";
+
 const page = () => {
   const router = useRouter();
-  const { userInfo, setUserInfo } = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext);
   // this state are storing the users data for validation check
   const [userEmail, setUserEmail] = useState<string>("");
   const [userPassword, setUserPassword] = useState<string>("");
@@ -52,48 +54,29 @@ const page = () => {
       password: userPassword,
     };
 
-    console.log(body);
 
     try {
-      const response: any = await axios.post(
-        "http://localhost:5000/login",
-        body
-      );
-      console.log(response);
-      if (response.data.ok) {
-        Toast.fire({
-          icon: "success",
-          title: "Sign in successfully",
-        });
-        try {
-          const response: any = await axios.post("http://localhost:5000/jwt", {
-            email: body.email,
+      signIn(userEmail, userPassword)
+        .then((result: any) => {
+          if (result?.user?.uid) {
+            Toast.fire({
+              icon: "success",
+              title: "Sign in successfully",
+            });
+            getToken(body.email)
+            event.target.reset();
+            router.push("/");
+          }
+        })
+        .catch((err: any) => {
+          const responseErr = err?.message.split(":");
+          Toast.fire({
+            icon: "error",
+            title: `${responseErr[1]}`,
           });
-          console.log(response);
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("isLoggedIn", "true");
-        } catch (error) {
-          console.log(error);
-        }
-        // set the current user data in store  (context api)
-        const currentUser: IUser = {
-          email: body.email,
-          isLoggedIn: true,
-        };
-        setUserInfo(currentUser);
-        // ================= *******set done ******* =============
-        setEmailError("");
-        setPasswordError("");
-        event.target.reset();
-        router.push("/");
-      } else {
-        Toast.fire({
-          icon: "error",
-          title: `${response.data.message}`,
         });
-      }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   };
 

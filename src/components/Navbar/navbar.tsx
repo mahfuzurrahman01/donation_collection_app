@@ -6,12 +6,13 @@ import logo from "../../../public/logo.png";
 import Link from "next/link";
 import { AiOutlineMenu, AiOutlineUser } from "react-icons/ai";
 import { HiXMark } from "react-icons/hi2";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "@/AuthProvider/AuthProvider";
 
 const navbar = () => {
-  const localStorageData: any = localStorage.getItem("isLoggedIn");
-  const isLoggedIn = JSON.parse(localStorageData);
-
+  const {user} = useContext(AuthContext)
+    const localStorageData: any = localStorage.getItem("isLoggedIn");
+    const isLoggedIn = JSON.parse(localStorageData);
   const [menuToggle, setMenuToggle] = useState(false);
   return (
     <div className="bg-black flex justify-between md:items-center items-start lg:py-3 py-2  relative">

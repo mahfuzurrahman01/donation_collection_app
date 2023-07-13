@@ -4,10 +4,14 @@
 import axios from "axios";
 import Link from "next/link";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "@/AuthProvider/AuthProvider";
+import { getToken } from "@/utils/getToken";
+
 const page = () => {
+  const { setLoading, loading, createUser } = useContext(AuthContext);
   const router = useRouter();
   // this state are storing the users data for validation check
   const [userName, setUserName] = useState<string>("");
@@ -58,7 +62,8 @@ const page = () => {
       setUserName(value);
     } else if (field === "email") {
       setEmailError("");
-      setUserEmail(value);
+      const newValue = value.toLowerCase()
+      setUserEmail(newValue);
     } else if (field === "password") {
       setPasswordError("");
       setUserPassword(value);
@@ -92,8 +97,9 @@ const page = () => {
       setPasswordError(
         "Password should 8 digits and contain uppercase,lowercase,number,characters"
       );
+      return
     }
-    // this is the request body
+
     const body = {
       name: userName,
       email: userEmail,
@@ -112,21 +118,21 @@ const page = () => {
           icon: "success",
           title: "Register successfully",
         });
-        try {
-          const response: any = await axios.post("http://localhost:5000/jwt", {
-            email: body.email,
-          });
-          console.log(response);
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("isLoggedIn", "true");
-        } catch (error) {
-          console.log(error);
-        }
+        // this function is setting the token
+        getToken(body.email);
+        // creating user in firebase too
+        createUser(userEmail, userPassword)
+          .then((result: any) => {
+            const user = result.user;
+            console.log(user);
+            event.target.reset();
+            // we are saving data on our database and we are taking token
+          })
+          .catch((err: any) => console.log(err));
         setUserPassword("");
         setNameError("");
         setEmailError("");
         setPasswordError("");
-        event.target.reset();
         router.push("/");
       } else {
         Toast.fire({
@@ -138,7 +144,7 @@ const page = () => {
       console.log(error);
     }
   };
-
+  console.log(loading);
   return (
     <div className="lg:my-10 my-5 mx-auto">
       <div className="lg:w-[400px] lg:max-w-[400px] w-[350px] max-w-[350px] p-8 space-y-3 rounded-xl bg-gray-900 bg-opacity-30 text-gray-300">
