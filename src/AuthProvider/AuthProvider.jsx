@@ -12,7 +12,6 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
     //creating user 
     const createUser = (email, password) => {
-        console.log(email,password)
         setLoading(true)
         return createUserWithEmailAndPassword(auth, email, password)
     }
@@ -21,18 +20,21 @@ const AuthProvider = ({ children }) => {
         setLoading(true)
         return signInWithEmailAndPassword(auth, email, password)
     }
-  
+    //log out user
+    const logOut = () => {
+        setLoading(true)
+        return signOut(auth)
+    }
     //auth state
     useEffect(() => {
         const subscription = onAuthStateChanged(auth, currentUser => {
-            console.log(currentUser)
             setUser(currentUser)
             setLoading(false)
         })
         return () => subscription()
-    }, [])
+    }, [loading])
 
-    const authInfo = { user, createUser, loading, setLoading,signIn }
+    const authInfo = { user, createUser, loading, setLoading, signIn,logOut }
     return (
         <AuthContext.Provider value={authInfo}>
             {children}

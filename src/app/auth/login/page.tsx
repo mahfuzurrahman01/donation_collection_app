@@ -8,27 +8,17 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/AuthProvider/AuthProvider";
 import { getToken } from "@/utils/getToken";
+import successToast from "@/utils/Toast/success";
+import errorToast from "@/utils/Toast/error";
 
 const page = () => {
   const router = useRouter();
-  const { signIn } = useContext(AuthContext);
+  const { signIn,setLoading } = useContext(AuthContext);
   // this state are storing the users data for validation check
   const [userEmail, setUserEmail] = useState<string>("");
   const [userPassword, setUserPassword] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
-  // this is for sweet alert
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener("mouseenter", Swal.stopTimer);
-      toast.addEventListener("mouseleave", Swal.resumeTimer);
-    },
-  });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement> | any) => {
     event.preventDefault();
@@ -54,26 +44,20 @@ const page = () => {
       password: userPassword,
     };
 
-
     try {
       signIn(userEmail, userPassword)
         .then((result: any) => {
           if (result?.user?.uid) {
-            Toast.fire({
-              icon: "success",
-              title: "Sign in successfully",
-            });
-            getToken(body.email)
+            successToast("Sign in successfully");
+            getToken(body.email);
             event.target.reset();
+            setLoading(true)
             router.push("/");
           }
         })
         .catch((err: any) => {
           const responseErr = err?.message.split(":");
-          Toast.fire({
-            icon: "error",
-            title: `${responseErr[1]}`,
-          });
+          errorToast(`${responseErr[1]}`);
         });
     } catch (err) {
       console.log(err);
@@ -87,7 +71,8 @@ const page = () => {
     const value = event.target.value;
     if (field === "email") {
       setEmailError("");
-      setUserEmail(value);
+      const newValue = value.toLowerCase();
+      setUserEmail(newValue);
     } else if (field === "password") {
       setPasswordError("");
       setUserPassword(value);

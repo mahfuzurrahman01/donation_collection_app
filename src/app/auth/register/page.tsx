@@ -9,6 +9,8 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/AuthProvider/AuthProvider";
 import { getToken } from "@/utils/getToken";
+import successToast from "@/utils/Toast/success";
+import errorToast from "@/utils/Toast/error";
 
 const page = () => {
   const { setLoading, loading, createUser } = useContext(AuthContext);
@@ -22,18 +24,6 @@ const page = () => {
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
-  // this is for sweet alert
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener("mouseenter", Swal.stopTimer);
-      toast.addEventListener("mouseleave", Swal.resumeTimer);
-    },
-  });
 
   // this function is for show and hide password toggler
   const togglePasswordVisibility = () => {
@@ -42,7 +32,6 @@ const page = () => {
   // this is password regex checker
   function checkPasswordStrength(password: string): boolean {
     const length = password.length >= 8;
-    console.log(length);
     const hasUppercase = /[A-Z]/.test(password);
     const hasLowercase = /[a-z]/.test(password);
     const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
@@ -62,7 +51,7 @@ const page = () => {
       setUserName(value);
     } else if (field === "email") {
       setEmailError("");
-      const newValue = value.toLowerCase()
+      const newValue = value.toLowerCase();
       setUserEmail(newValue);
     } else if (field === "password") {
       setPasswordError("");
@@ -92,12 +81,11 @@ const page = () => {
       return;
     }
     const validPassword = checkPasswordStrength(userPassword);
-    console.log(validPassword);
     if (!validPassword) {
       setPasswordError(
         "Password should 8 digits and contain uppercase,lowercase,number,characters"
       );
-      return
+      return;
     }
 
     const body = {
@@ -112,39 +100,33 @@ const page = () => {
         "http://localhost:5000/register",
         body
       );
-      console.log(response);
       if (response.data.ok) {
-        Toast.fire({
-          icon: "success",
-          title: "Register successfully",
-        });
+        successToast("Register successfully");
         // this function is setting the token
         getToken(body.email);
         // creating user in firebase too
         createUser(userEmail, userPassword)
           .then((result: any) => {
             const user = result.user;
-            console.log(user);
-            event.target.reset();
+
             // we are saving data on our database and we are taking token
           })
           .catch((err: any) => console.log(err));
+        setLoading(true);
+        event.target.reset();
         setUserPassword("");
         setNameError("");
         setEmailError("");
         setPasswordError("");
         router.push("/");
       } else {
-        Toast.fire({
-          icon: "error",
-          title: `${response.data.message}`,
-        });
+        errorToast(`${response.data.message}`);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(loading);
+
   return (
     <div className="lg:my-10 my-5 mx-auto">
       <div className="lg:w-[400px] lg:max-w-[400px] w-[350px] max-w-[350px] p-8 space-y-3 rounded-xl bg-gray-900 bg-opacity-30 text-gray-300">

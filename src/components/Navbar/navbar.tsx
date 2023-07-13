@@ -8,12 +8,26 @@ import { AiOutlineMenu, AiOutlineUser } from "react-icons/ai";
 import { HiXMark } from "react-icons/hi2";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/AuthProvider/AuthProvider";
+import successToast from "@/utils/Toast/success";
+import { useRouter } from "next/navigation";
 
 const navbar = () => {
-  const {user} = useContext(AuthContext)
-    const localStorageData: any = localStorage.getItem("isLoggedIn");
-    const isLoggedIn = JSON.parse(localStorageData);
+  const router = useRouter();
+  const { user, logOut } = useContext(AuthContext);
+  let isLoggedIn;
+  if (user?.uid) {
+    isLoggedIn = true;
+  } else {
+    isLoggedIn = false;
+  }
   const [menuToggle, setMenuToggle] = useState(false);
+  const logOutHandle = () => {
+    logOut();
+    setMenuToggle(false)
+    successToast("Successfully Logout");
+    localStorage.clear();
+    router.push("/");
+  };
   return (
     <div className="bg-black flex justify-between md:items-center items-start lg:py-3 py-2  relative">
       {/* logo div  */}
@@ -27,6 +41,12 @@ const navbar = () => {
       </Link>
       {/* navbar tab div for desktop */}
       <div className="lg:flex hidden items-center gap-5">
+        <Link
+          className="hover:text-green-700 duration-300 hover:font-semibold"
+          href="/"
+        >
+          Home
+        </Link>
         <Link
           className="hover:text-green-700 duration-300 hover:font-semibold"
           href="/causes"
@@ -45,19 +65,23 @@ const navbar = () => {
         >
           Blogs
         </Link>
-        <Link
-          className="hover:text-green-700 duration-300 hover:font-semibold"
-          href="/project"
-        >
-          Projects
-        </Link>
-        {isLoggedIn ? (
+
+        {isLoggedIn && (
           <Link
             href="/dashboard"
-            className="p-2 rounded-full bg-green-700 text-gray-100 hover:bg-green-800 duration-300"
+            className="hover:text-green-700 duration-300 hover:font-semibold"
           >
-            <AiOutlineUser className="text-xl" />
+            {/* <AiOutlineUser className="text-xl" /> */}
+            Dashboard
           </Link>
+        )}
+        {isLoggedIn ? (
+          <button
+            onClick={logOutHandle}
+            className="px-4 py-1 rounded-md bg-green-700 text-gray-100 hover:bg-green-800 duration-300"
+          >
+            Logout
+          </button>
         ) : (
           <button className="px-4 py-1 rounded-md bg-green-700 text-gray-100 hover:bg-green-800 duration-300">
             <Link href="/auth/login">Sign In</Link>
@@ -83,6 +107,13 @@ const navbar = () => {
         } duration-500`}
       >
         <Link
+          href="/"
+          className="border-b p-1 text-center hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300"
+          onClick={() => setMenuToggle(false)}
+        >
+          Home
+        </Link>
+        <Link
           href="/causes"
           className="border-b p-1 text-center hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300"
           onClick={() => setMenuToggle(false)}
@@ -103,19 +134,22 @@ const navbar = () => {
         >
           Blogs
         </Link>
-        <Link
-          href="/project"
-          className="border-b p-1 text-center hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300"
-          onClick={() => setMenuToggle(false)}
-        >
-          Projects
-        </Link>
+        {isLoggedIn && (
+          <Link
+            href="/dashboard"
+            className="border-b p-1 text-center hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300"
+            onClick={() => setMenuToggle(false)}
+          >
+            Dashboard
+          </Link>
+        )}
+
         {isLoggedIn ? (
           <button
             className="border-b p-1 text-center bg-white text-gray-400 hover:bg-black hover:text-green-700 hover:border-none rounded-md duration-300"
-            onClick={() => setMenuToggle(false)}
+            onClick={logOutHandle}
           >
-            <p>Dashboard</p>
+            <p>Logout</p>
           </button>
         ) : (
           <Link

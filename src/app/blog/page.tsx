@@ -8,6 +8,7 @@ import blog5 from "../../../public/blog5.jpg";
 import blog6 from "../../../public/blog6.jpg";
 import blog7 from "../../../public/blog7.jpg";
 const page = () => {
+
   return (
     <div>
       <h1 className="heading md:text-6xl text-4xl text-center my-5 font-extrabold uppercase bg-gradient-to-t from-gray-300 bg-green-700">

@@ -6,6 +6,7 @@ import education from "../../../../public/education.jpg";
 import hungry from "../../../../public/hungry.jpg";
 import house from "../../../../public/house.jpg";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 const Card = () => {
   const router = useRouter();
   return (
@@ -41,7 +42,7 @@ const Card = () => {
                 type="button"
                 className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm "
               >
-                Donate
+                <Link href='/causes'>Donate</Link>
               </button>
             </div>
           </div>
@@ -69,7 +70,7 @@ const Card = () => {
                 type="button"
                 className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm "
               >
-                Donate
+                <Link href='/causes'>Donate</Link>
               </button>
             </div>
           </div>
@@ -94,7 +95,7 @@ const Card = () => {
                 type="button"
                 className="self-start border border-green-700 px-3 py-1 rounded-md hover:bg-white hover:text-green-700 duration-300 text-sm "
               >
-                Donate
+                <Link href='/causes'>Donate</Link>
               </button>
             </div>
           </div>

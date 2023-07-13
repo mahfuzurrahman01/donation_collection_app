@@ -1,41 +1,45 @@
 "use client";
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { AuthContext } from "@/AuthProvider/AuthProvider";
+import { IUserInfo } from "@/Types/type";
+import { useRouter } from "next/navigation";
 const page = () => {
-  const [role, setRole] = useState<string>();
-  const token: any = localStorage.getItem("token");
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response: any = await axios.get(
-          "http://localhost:5000/checkRole",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log(response);
-        if (response.data.ok) {
-          console.log(response);
-          setRole(response.data.userInfo.role);
-        }
-      } catch (error) {
-        console.error("Error:", error);
+  const router = useRouter();
+  const { user } = useContext(AuthContext);
+  const [userDetails, setUserDetails] = useState<IUserInfo>({} as IUserInfo);
+  // this function will fetch the login user data from backend
+  const fetchData = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response: any = await axios.get("http://localhost:5000/checkRole", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.ok) {
+        setUserDetails(response.data.userInfo);
       }
-    };
-
-    fetchData();
-  }, [token]);
-  const logOutHandle = () => {
-    localStorage.clear()
-    localStorage.setItem('isLoggedIn','false')
-  }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  useEffect(() => {
+    if (user?.uid) {
+      fetchData();
+    }
+  }, [user?.uid]);
+  
   return (
     <div>
-      <button onClick={logOutHandle} className="bg-green-700 px-4 py-1 rounded-md">Logout</button>
-      <h1>This is dashboard for {role}</h1>
+ 
+        <div>
+          <h1>Name: {userDetails?.name}</h1>
+          <h1>Email: {userDetails?.email}</h1>
+          <h1>Role: {userDetails?.role}</h1>
+        </div>
+   
     </div>
   );
 };
