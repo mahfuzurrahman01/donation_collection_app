@@ -50,7 +50,7 @@ const page = () => {
           if (result?.user?.uid) {
             successToast("Sign in successfully");
             getToken(body.email);
-            Cookies.set("isLoggedIn", "true");
+           
             event.target.reset();
             setLoading(true)
             router.push("/");
