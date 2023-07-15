@@ -11,5 +11,5 @@ export interface IDonation {
   imageLink: string;
   description: string;
   _id?: ObjectId | any;
-  fundCollected?: string;
+  fundCollected?: number;
 }

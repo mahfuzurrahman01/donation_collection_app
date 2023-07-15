@@ -122,7 +122,7 @@ const page = () => {
       category,
       imageLink,
       description,
-      fundCollected: "0",
+      fundCollected: 0,
     };
 
     try {
@@ -482,7 +482,7 @@ const page = () => {
                   >
                     <div className="flex flex-col gap-2 bg-gray-800 bg-opacity-30 p-5 rounded lg:w-3/4 w-full">
                       <p className="text-xl font-bold text-green-700">
-                        Name: {donation?.name}
+                        {donation?.name}
                       </p>
                       <p className="font-light w-24 text-center text-sm rounded border border-green-700">
                         {donation?.category}
