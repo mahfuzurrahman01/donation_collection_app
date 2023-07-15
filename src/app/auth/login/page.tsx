@@ -3,15 +3,15 @@
 "use client";
 import Link from "next/link";
 import { FormEvent, useContext, useState } from "react";
-import Swal from "sweetalert2";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/AuthProvider/AuthProvider";
 import { getToken } from "@/utils/getToken";
 import successToast from "@/utils/Toast/success";
 import errorToast from "@/utils/Toast/error";
+import Cookies from "js-cookie";
 
 const page = () => {
+
   const router = useRouter();
   const { signIn,setLoading } = useContext(AuthContext);
   // this state are storing the users data for validation check
@@ -50,6 +50,7 @@ const page = () => {
           if (result?.user?.uid) {
             successToast("Sign in successfully");
             getToken(body.email);
+            Cookies.set("isLoggedIn", "true");
             event.target.reset();
             setLoading(true)
             router.push("/");

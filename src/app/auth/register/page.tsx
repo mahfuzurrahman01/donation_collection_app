@@ -11,7 +11,7 @@ import { AuthContext } from "@/AuthProvider/AuthProvider";
 import { getToken } from "@/utils/getToken";
 import successToast from "@/utils/Toast/success";
 import errorToast from "@/utils/Toast/error";
-
+import Cookies from "js-cookie";
 const page = () => {
   const { setLoading, loading, createUser } = useContext(AuthContext);
   const router = useRouter();
@@ -104,6 +104,7 @@ const page = () => {
         successToast("Register successfully");
         // this function is setting the token
         getToken(body.email);
+        Cookies.set("isLoggedIn", "true");
         // creating user in firebase too
         createUser(userEmail, userPassword)
           .then((result: any) => {

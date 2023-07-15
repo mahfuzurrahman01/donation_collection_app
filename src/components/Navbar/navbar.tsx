@@ -10,11 +10,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/AuthProvider/AuthProvider";
 import successToast from "@/utils/Toast/success";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { cookies } from "next/dist/client/components/headers";
 
 const navbar = () => {
   const router = useRouter();
   const { user, logOut } = useContext(AuthContext);
   let isLoggedIn;
+  console.log(user?.uid);
   if (user?.uid) {
     isLoggedIn = true;
   } else {
@@ -23,11 +26,13 @@ const navbar = () => {
   const [menuToggle, setMenuToggle] = useState(false);
   const logOutHandle = () => {
     logOut();
-    setMenuToggle(false)
+    setMenuToggle(false);
     successToast("Successfully Logout");
     localStorage.clear();
+    Cookies.remove("isLoggedIn");
     router.push("/");
   };
+  
   return (
     <div className="bg-black flex justify-between md:items-center items-start lg:py-3 py-2  relative">
       {/* logo div  */}
