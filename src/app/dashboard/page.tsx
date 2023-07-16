@@ -1,10 +1,11 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useRef } from "react";
 import { AuthContext } from "@/AuthProvider/AuthProvider";
-import { IDonation, IUserInfo } from "@/Types/type";
+import { IDonation, IUserDonation, IUserInfo } from "@/Types/type";
 import { useRouter } from "next/navigation";
 import FormData from "form-data";
 import { getToken } from "@/utils/getToken";
@@ -70,7 +71,6 @@ const page = () => {
         .then((response) => {
           if (response?.data?.success) {
             const imageLink = response?.data?.data?.url;
-            console.log(imageLink);
             setImageLink(imageLink);
             setGetImage(true);
           }
@@ -131,7 +131,6 @@ const page = () => {
         body,
         { headers }
       );
-      console.log(response);
       if (response?.data?.ok) {
         successToast("Donation created successfully");
         setIsLoading(true);
@@ -182,18 +181,21 @@ const page = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [donations, setDonations] = useState<IDonation[]>([]);
-
+  const [sortingName, setSortingName] = useState<string>("all");
   useEffect(() => {
-    const fetchDonations = async () => {
+    const fetchDonations = async (sortingName: string) => {
       try {
         const token = localStorage.getItem("token");
         const headers = {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         };
-        const response = await axios.get("http://localhost:5000/all-donation", {
-          headers,
-        });
+        const response = await axios.get(
+          `http://localhost:5000/all-donation?sortingName=${sortingName}`,
+          {
+            headers,
+          }
+        );
         if (response?.data?.ok) {
           setDonations(response.data.data);
           setIsLoading(false);
@@ -203,12 +205,11 @@ const page = () => {
       }
     };
 
-    fetchDonations();
-  }, [isLoading]);
+    fetchDonations(sortingName);
+  }, [isLoading, sortingName]);
 
   const [selectedId, setSelectedId] = useState<string>("");
   const updateHandler = (donation: IDonation) => {
-    console.log(donation);
     setName(donation.name);
     setCategory(donation.category);
     setDescription(donation.description);
@@ -235,7 +236,6 @@ const page = () => {
         body,
         { headers }
       );
-      console.log(response);
       if (response?.data?.ok) {
         successToast("Donation update successfully");
         setIsLoading(true);
@@ -257,7 +257,6 @@ const page = () => {
         `http://localhost:5000/donation/delete/${id}`,
         { headers }
       );
-      console.log(response);
       if (response?.data?.ok) {
         successToast("Donation deleted successfully");
         setIsLoading(true);
@@ -266,21 +265,62 @@ const page = () => {
       console.log(error);
     }
   };
+  const [userDonations, setUserDonations] = useState<IUserDonation[]>([]);
+  useEffect(() => {
+    const getUserDonation = async () => {
+      const token = localStorage.getItem("token");
+      const header = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      };
+      try {
+        const response = await axios.get("http://localhost:5000/userDonation", {
+          headers: header,
+        });
+        if (response?.data?.ok) {
+          setUserDonations(response.data.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getUserDonation();
+  }, []);
 
   return (
     <div className="lg:my-5 my-2">
       {loggedInUserDetails?.role === "admin" ? (
         <div>
-          <div className="flex justify-between items-center flex-wrap">
-            <button
-              className="btn bg-green-700 ml-5 rounded-md"
-              onClick={() => modalRef.current?.showModal()}
-            >
-              Create new donation
-            </button>
-            <button className="uppercase px-2 py-1 bg-gray-200 text-green-700 font-semibold ml-5 rounded-md text-xs">
+          <div className="flex justify-between items-center ">
+            <div className="flex justify-start gap-1 items-center flex-wrap">
+              <button
+                className="btn bg-green-700 ml-5 rounded-md"
+                onClick={() => modalRef.current?.showModal()}
+              >
+                Create new donation
+              </button>
+              <button
+                className="btn bg-green-700 ml-5 rounded-md"
+                onClick={() => router.push("/dashboard/report")}
+              >
+                Report page
+              </button>
+            </div>
+            <button className="lg:block hidden uppercase px-2 py-1 bg-gray-200 text-green-700 font-semibold ml-5 rounded-md text-xs">
               Protected admin panel
             </button>
+          </div>
+          <div className="px-5 py-1 flex justify-start items-start mt-4 flex-col">
+            <p>Sort by</p>
+            <select
+              className="px-2 py-1 rounded-md"
+              onChange={(e: any) => setSortingName(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="Education">Education</option>
+              <option value="Food">Food & nutrition</option>
+              <option value="Shelter">Shelter</option>
+            </select>
           </div>
           <dialog id="my_modal_3" className="modal bg-black" ref={modalRef}>
             <form
@@ -532,7 +572,63 @@ const page = () => {
         </div>
       ) : (
         <div>
-          <p>Donor vaiya</p>
+          <div className="border-gray-200 bg-gray-800 bg-opacity-70 rounded-lg p-4 shadow-sm shadow-green-600">
+            <p className="text-xl font-light text-gray-200 mb-2">
+              Welcome to SADAKAH's Dashboard,{" "}
+              <span className="text-green-700 font-semibold">
+                {loggedInUserDetails.name}
+              </span>{" "}
+              !
+            </p>
+            <p className="mt-1 italic">
+              Your kindness knows no bounds, and we are grateful for your
+              generous heart. With every login, you inspire us with your
+              dedication to making a positive impact in the world. Together, we
+              are transforming lives and creating a better tomorrow. Thank you
+              for being a beacon of hope and compassion. Your support empowers
+              us to reach those in need and uplift communities around the globe.
+              Your generosity truly makes a difference
+            </p>
+            <p className="text-sm mt-5 font-light text-gray-200">
+              With heartfelt gratitude,
+              <span className="text-green-700 font-semibold">
+                The SADAKAH Team
+              </span>{" "}
+              !
+            </p>
+          </div>
+
+          <div>
+            <p className="text-green-700 font-semibold text-lg my-5 text-center">
+              You've total donated for {userDonations.length}{" "}
+              {userDonations.length === 1 ? "time" : "times"}
+            </p>
+            <div className="flex lg:w-3/4 w-[98%] justify-between mx-auto items-center border-b border-gray-200 mt-1 mb-2">
+              <p className="text-lg w-3/4 font-semibold border-l border-gray-200 px-2 py-1">
+                Donation name
+              </p>
+              <p className="text-lg w-1/4 font-semibold border-l border-gray-200 px-2 py-1">
+                Donated amount
+              </p>
+            </div>
+            {userDonations?.length > 0 &&
+              userDonations.map((donation: IUserDonation, index: number) => (
+                <div
+                  key={index}
+                  className="mx-auto lg:w-3/4 w-[98%] flex justify-between items-center border border-green-700 p-2"
+                >
+                  <p className="w-3/4 px-2 py-1 flex items-center gap-2">
+                    <span>
+                      <FaDonate />{" "}
+                    </span>
+                    {donation.donationName}
+                  </p>
+                  <p className="w-1/4 flex justify-start items-center px-2 py-1 border-l border-gray-200">
+                    $ {donation.donatedAmount}
+                  </p>
+                </div>
+              ))}
+          </div>
         </div>
       )}
     </div>

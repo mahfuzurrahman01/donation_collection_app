@@ -17,7 +17,6 @@ const navbar = () => {
   const router = useRouter();
   const { user, logOut } = useContext(AuthContext);
   let isLoggedIn;
-  console.log(user?.uid);
   if (user?.uid) {
     isLoggedIn = true;
   } else {

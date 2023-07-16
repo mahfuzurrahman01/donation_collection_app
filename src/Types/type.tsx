@@ -13,3 +13,12 @@ export interface IDonation {
   _id?: ObjectId | any;
   fundCollected?: number;
 }
+
+export interface IUserDonation {
+  donorName: string;
+  donorEmail: string;
+  donationName: string;
+  donationId: string;
+  donatedAmount: number | string;
+  donationCategory?: string;
+}

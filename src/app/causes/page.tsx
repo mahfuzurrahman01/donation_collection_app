@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import { IDonation, IUserInfo } from "@/Types/type";
+import { IDonation, IUserDonation, IUserInfo } from "@/Types/type";
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -16,7 +16,9 @@ const page = () => {
   const [loggedInUserDetails, setLoggedInUserDetails] = useState<IUserInfo>(
     {} as IUserInfo
   );
-  // this function will fetch the login user data from backend
+
+  const [sortingName,setSortingName] =  useState<string>("all")
+
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
@@ -36,14 +38,14 @@ const page = () => {
     fetchData();
   });
   useEffect(() => {
-    const fetchDonations = async () => {
+    const fetchDonations = async (sortingName: string) => {
       try {
         const token = localStorage.getItem("token");
         const headers = {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         };
-        const response = await axios.get("http://localhost:5000/all-donation", {
+        const response = await axios.get(`http://localhost:5000/all-donation?sortingName=${sortingName}`, {
           headers,
         });
         if (response?.data?.ok) {
@@ -55,8 +57,8 @@ const page = () => {
       }
     };
 
-    fetchDonations();
-  }, [isLoading]);
+    fetchDonations(sortingName);
+  }, [isLoading,sortingName]);
   const [selectedDonation, setSelectedDonation] = useState<IDonation>(
     {} as IDonation
   );
@@ -66,7 +68,7 @@ const page = () => {
     setAmountError("");
     e.preventDefault();
     const value = e.target.value;
-    const amount = parseFloat(value)
+    const amount = parseFloat(value);
     setDonateAmount(amount);
   };
   const closeDonateForm = () => {
@@ -86,7 +88,6 @@ const page = () => {
   };
 
   const handleSubmit = async () => {
-    console.log(donateAmount);
     if (
       donateAmount === null ||
       donateAmount === undefined ||
@@ -96,12 +97,13 @@ const page = () => {
       setAmountError("Please select amount");
       return;
     }
-    const body = {
+    const body:IUserDonation = {
       donorName: loggedInUserDetails?.name,
       donorEmail: loggedInUserDetails?.email,
       donationName: selectedDonation?.name,
       donationId: selectedDonation?._id,
       donatedAmount: donateAmount,
+      donationCategory: selectedDonation.category,
     };
     try {
       const response = await axios.post("http://localhost:5000/donate", body, {
@@ -161,11 +163,22 @@ const page = () => {
                 Donated for (Default selected)
               </label>
               <input
-                id="donorEmail"
-                name="donorEmail"
+                id="donatedFor"
+                name="donatedFor"
                 type="text"
                 className="w-full px-3 py-1 rounded-md focus:ring focus:ri focus:ri bg-gray-900 bg-opacity-70 mb-3 mt-1"
                 value={selectedDonation?.name}
+                readOnly
+              />
+              <label htmlFor="donorName" className="text-sm">
+                Donated category (Default selected)
+              </label>
+              <input
+                id="donatedCategory"
+                name="donatedCategory"
+                type="text"
+                className="w-full px-3 py-1 rounded-md focus:ring focus:ri focus:ri bg-gray-900 bg-opacity-70 mb-3 mt-1"
+                value={selectedDonation?.category}
                 readOnly
               />
               <label htmlFor="donorName" className="text-sm">
@@ -234,52 +247,63 @@ const page = () => {
       {isLoading ? (
         <p>loading</p>
       ) : (
-        <div className="flex justify-center items-center flex-wrap gap-5">
-          {donations.map((donation: IDonation, index: number) => (
-            <div
-              key={index}
-              className="p-5 bg-black text-gray-300 flex gap-4 justify-center items-center "
-            >
-              <div className="flex flex-col gap-2 bg-gray-800 bg-opacity-30 p-5 rounded lg:w-3/4 w-full">
-                <p className="text-xl font-bold text-green-700">
-                  {donation?.name}
-                </p>
-                <p className="font-light w-24 text-center text-sm rounded border border-green-700">
-                  {donation?.category}
-                </p>
-                <small>description: {donation?.description}</small>
-                <div className="flex justify-between px-4 mt-2">
-                  <div className="flex justify-start items-center gap-3 mt-5">
-                    <button
-                      className="font-semibold px-4 py-1 rounded bg-gray-200 hover:bg-green-700 duration-300 text-green-700 hover:text-gray-300 text-sm"
-                      onClick={() => donateHandle(donation)}
-                    >
-                      Donate now
-                    </button>
-                  </div>
-                  <div className="flex flex-col justify-center items-center">
-                    <div className="flex justify-end items-center gap-2">
-                      <FaDonate className="text-2xl text-gray-300" />
-                      <p className="text-3xl font-semibold">
-                        {donation?.fundCollected}
+        <div>
+          <div className="px-5 py-3">
+            <p>Sort by</p>
+            <select className="px-2 py-1 rounded-md" onChange={(e: any) => setSortingName(e.target.value) }>
+              <option value="all">All</option>
+              <option value="Education">Education</option>
+              <option value="Food">Food & nutrition</option>
+              <option value="Shelter">Shelter</option>
+            </select>
+          </div>
+          <div className="flex justify-center items-center flex-wrap gap-5">
+            {donations.map((donation: IDonation, index: number) => (
+              <div
+                key={index}
+                className="p-5 bg-black text-gray-300 flex gap-4 justify-center items-center "
+              >
+                <div className="flex flex-col gap-2 bg-gray-800 bg-opacity-30 p-5 rounded lg:w-3/4 w-full">
+                  <p className="text-xl font-bold text-green-700">
+                    {donation?.name}
+                  </p>
+                  <p className="font-light w-24 text-center text-sm rounded border border-green-700">
+                    {donation?.category}
+                  </p>
+                  <small>description: {donation?.description}</small>
+                  <div className="flex justify-between px-4 mt-2">
+                    <div className="flex justify-start items-center gap-3 mt-5">
+                      <button
+                        className="font-semibold px-4 py-1 rounded bg-gray-200 hover:bg-green-700 duration-300 text-green-700 hover:text-gray-300 text-sm"
+                        onClick={() => donateHandle(donation)}
+                      >
+                        Donate now
+                      </button>
+                    </div>
+                    <div className="flex flex-col justify-center items-center">
+                      <div className="flex justify-end items-center gap-2">
+                        <FaDonate className="text-2xl text-gray-300" />
+                        <p className="text-3xl font-semibold">
+                          {donation?.fundCollected}
+                        </p>
+                      </div>
+                      <p className="text-xs text-green-700 mt-1">
+                        Collected amount
                       </p>
                     </div>
-                    <p className="text-xs text-green-700 mt-1">
-                      Collected amount
-                    </p>
                   </div>
                 </div>
+                <div className="w-[25%] h-52 relative lg:block hidden">
+                  <Image
+                    src={donation.imageLink}
+                    alt="banner image"
+                    fill={true}
+                    className="rounded-lg"
+                  />
+                </div>
               </div>
-              <div className="w-[25%] h-52 relative lg:block hidden">
-                <Image
-                  src={donation.imageLink}
-                  alt="banner image"
-                  fill={true}
-                  className="rounded-lg"
-                />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
