@@ -31,7 +31,7 @@ const navbar = () => {
     Cookies.remove("isLoggedIn");
     router.push("/");
   };
-  
+
   return (
     <div className="bg-black flex justify-between md:items-center items-start lg:py-3 py-2  relative">
       {/* logo div  */}
@@ -51,12 +51,14 @@ const navbar = () => {
         >
           Home
         </Link>
-        <Link
-          className="hover:text-green-700 duration-300 hover:font-semibold"
-          href="/causes"
-        >
-          causes
-        </Link>
+        {isLoggedIn && (
+          <Link
+            className="hover:text-green-700 duration-300 hover:font-semibold"
+            href="/causes"
+          >
+            causes
+          </Link>
+        )}
         <Link
           className="hover:text-green-700 duration-300 hover:font-semibold"
           href="/story"
